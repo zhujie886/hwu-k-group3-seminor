@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Three Seminar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- Tailwind 配置 - 使用#D9FFFF作为主题色，更柔和的青色 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#D9FFFF',      // 主色调：柔和的青色
+                        secondary: '#BFFFFF',    // 辅助色：稍深一点的青色
+                        accent: '#FFD166',       // 强调色：明亮黄色
+                        light: '#FCFEFE',        // 极浅背景色
+                    },
+                    fontFamily: {
+                        comic: ['Comic Sans MS', 'Comic Sans', 'cursive'],
+                        cute: ['"Comic Neue"', 'cursive', 'sans-serif'],
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 3s infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'wiggle': 'wiggle 1s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 8s linear infinite',
+                        'wiggle': 'wiggle 2s ease-in-out infinite',
+                        'pop': 'pop 0.5s ease-out',
+                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                        'slide-down': 'slideDown 0.8s ease-out forwards',
+                        'fade-in': 'fadeIn 1s ease-out forwards',
+                        'bounce-in': 'bounceIn 0.6s ease-out forwards',
+                        'pulse-scale': 'pulseScale 2s infinite',
+                        'fall': 'fall 5s linear forwards',
+                        'scale-in': 'scaleIn 0.4s ease-out forwards',
+                        'scale-out': 'scaleOut 0.3s ease-in forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
+                        },
+                        pop: {
+                            '0%': { transform: 'scale(0.8)' },
+                            '70%': { transform: 'scale(1.1)' },
+                            '100%': { transform: 'scale(1)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        slideDown: {
+                            '0%': { transform: 'translateY(-20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        bounceIn: {
+                            '0%': { transform: 'scale(0)' },
+                            '60%': { transform: 'scale(1.1)' },
+                            '100%': { transform: 'scale(1)' },
+                        },
+                        pulseScale: {
+                            '0%, 100%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.05)' },
+                        },
+                        fall: {
+                            '0%': { 
+                                transform: 'translateY(-10px) rotate(0deg)',
+                                opacity: 1
+                            },
+                            '100%': { 
+                                transform: `translateY(${window.innerHeight}px) rotate(720deg)`,
+                                opacity: 0
+                            }
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.7)', opacity: '0' },
+                            '70%': { transform: 'scale(1.05)' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        },
+                        scaleOut: {
+                            '0%': { transform: 'scale(1)', opacity: '1' },
+                            '100%': { transform: 'scale(0.7)', opacity: '0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow-cute {
+                text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+            }
+            .character-card {
+                transition: all 0.3s ease;
+            }
+            .character-card:hover {
+                transform: translateY(-10px) scale(1.03);
+                animation: wiggle 0.5s ease-in-out;
+                box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+            .speech-bubble {
+                position: relative;
+                border-radius: 20px;
+            }
+            .speech-bubble::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 0;
+                border: 12px solid transparent;
+            }
+            .speech-right::after {
+                left: 100%;
+                top: 30%;
+                border-left-color: currentColor;
+            }
+            .panel {
+                opacity: 0;
+                transform: translateY(20px);
+                transition: all 0.5s ease-out;
+            }
+            .panel.active {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            .slide-in {
+                animation: slideIn 0.5s ease-out forwards;
+            }
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(-30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            .shine-effect {
+                position: relative;
+                overflow: hidden;
+            }
+            .shine-effect::after {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient(
+                    to right,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.4) 50%,
+                    rgba(255, 255, 255, 0) 100%
+                );
+                transform: rotate(30deg);
+                animation: shine 7s infinite;
+            }
+            @keyframes shine {
+                0% {
+                    transform: rotate(30deg) translate(-100%, -100%);
+                }
+                100% {
+                    transform: rotate(30deg) translate(100%, 100%);
+                }
+            }
+            .character-modal {
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                transform: scale(0.9);
+                z-index: 50;
+            }
+            .character-modal.active {
+                opacity: 1;
+                visibility: visible;
+                animation: scale-in 0.4s ease-out;
+            }
+            .character-modal.closing {
+                animation: scale-out 0.3s ease-in forwards;
+            }
+            .modal-backdrop {
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                background: rgba(0, 0, 0, 0.5);
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 40;
+            }
+            .modal-backdrop.active {
+                opacity: 1;
+                visibility: visible;
+            }
+            .geometric-shape {
+                position: absolute;
+                opacity: 0.6;
+            }
+            .confetti {
+                position: absolute;
+                width: 10px;
+                height: 10px;
+                opacity: 0;
+            }
+            .typing-cursor {
+                border-right: 2px solid #000;
+                animation: blink 1s step-end infinite;
+            }
+            @keyframes blink {
+                from, to { border-color: transparent }
+                50% { border-color: #000 }
+            }
+        }
+    </style>
+    
+    <!-- 导入可爱字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-light font-cute min-h-screen">
+    <!-- 返回顶部按钮 -->
+    <button id="backToTopBtn" class="fixed bottom-6 right-6 bg-primary text-gray-800 w-12 h-12 rounded-full shadow-lg flex items-center justify-center opacity-0 transition-opacity duration-300 hover:bg-secondary transform hover:scale-110 z-50">
+        <i class="fa fa-arrow-up"></i>
+    </button>
+
+    <!-- 角色详情模态框 -->
+    <div class="modal-backdrop" id="characterModalBackdrop"></div>
+    <div class="character-modal fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-3xl shadow-2xl p-6 md:p-8 max-w-md w-full mx-4" id="characterModal">
+        <div class="flex justify-end">
+            <button id="closeModalBtn" class="text-gray-500 hover:text-gray-800 text-xl transition-colors duration-300">
+                <i class="fa fa-times"></i>
+            </button>
+        </div>
+        <div class="text-center">
+            <div class="w-40 h-40 rounded-full bg-primary/30 flex items-center justify-center overflow-hidden border-4 border-primary mx-auto mb-4 transform transition-transform duration-500 hover:scale-105">
+                <img id="modalAvatar" src="" alt="Character Avatar" class="w-full h-full object-cover">
+            </div>
+            <h3 id="modalName" class="text-2xl font-comic font-bold text-gray-800 mb-2"></h3>
+            <div id="modalRole" class="inline-block bg-accent text-gray-800 font-comic font-bold px-3 py-1 rounded-full text-sm shadow-md mb-4 transform transition-all duration-300 hover:scale-105 hover:shadow-lg"></div>
+            <p id="modalBio" class="text-gray-700 text-center"></p>
+            <div class="mt-6 pt-4 border-t border-gray-100">
+                <h4 class="font-comic font-bold text-gray-800 mb-2">Responsibilities:</h4>
+                <ul id="modalResponsibilities" class="text-gray-700 text-left space-y-1"></ul>
+            </div>
+        </div>
+        <div class="mt-8 text-center">
+            <button class="close-modal-btn bg-primary hover:bg-secondary text-gray-800 font-comic font-bold py-2 px-6 rounded-full shadow-md transform transition-all duration-300 hover:scale-105">
+                Got it!
+            </button>
+        </div>
+    </div>
+
+    <!-- 顶部标题区 - 无渐变，使用几何图形装饰 -->
+    <header class="relative bg-primary py-10 mb-6 shadow-md overflow-hidden">
+        <!-- 几何图形装饰 -->
+        <div class="geometric-shape top-5 left-10 w-16 h-16 bg-accent rounded-lg rotate-12 animate-float"></div>
+        <div class="geometric-shape bottom-5 right-10 w-12 h-12 bg-white rotate-45 animate-float" style="animation-delay: 1s"></div>
+        <div class="geometric-shape top-1/3 right-1/4 w-10 h-10 bg-secondary rounded-full animate-float" style="animation-delay: 2s"></div>
+        <div class="geometric-shape bottom-1/3 left-1/4 w-8 h-8 bg-white transform rotate-12 animate-float" style="animation-delay: 1.5s"></div>
+        <div class="geometric-shape top-1/2 left-1/3 w-6 h-16 bg-accent/70 rounded-md animate-float" style="animation-delay: 2.5s"></div>
+        
+        <div class="container mx-auto px-4 relative z-10">
+            <h1 class="text-[clamp(1.8rem,5vw,3rem)] font-comic font-bold text-gray-800 text-center text-shadow-cute animate-bounce-slow">
+                Group Three Seminar
+            </h1>
+            <p class="text-center text-gray-800/90 mt-4 text-[clamp(1rem,2vw,1.25rem)] animate-slide-down">
+                AI in Higher Education: Benefits vs. Risks
+            </p>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-4 pb-16 relative">
+        <!-- 角色介绍部分 -->
+        <section id="charactersSection" class="mb-12 panel active">
+            <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 transform hover:shadow-xl transition-all duration-300">
+                <h2 class="text-[clamp(1.5rem,3vw,2rem)] font-comic font-bold text-gray-800 mb-8 text-center animate-slide-down">
+                    <i class="fa fa-users text-accent mr-2"></i>Our Team <span class="text-sm">(Click to know more!)</span>
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- 角色卡片：Zhujie (Leader) - 男生猫咪头像 -->
+                    <div class="character-card bg-primary/10 rounded-2xl p-5 shadow-md border-2 border-primary cursor-pointer" data-character="zhujie">
+                        <div class="flex justify-center mb-4">
+                            <div class="relative">
+                                <div class="w-32 h-32 rounded-full bg-primary/30 flex items-center justify-center overflow-hidden border-4 border-primary animate-float">
+                                    <img src="https://c-ssl.duitang.com/uploads/blog/202106/01/20210601231241_94038.png" alt="Zhujie - Leader (Male Cat Avatar)" class="w-full h-full object-cover">
+                                </div>
+                                <div class="absolute -top-2 -right-2 bg-accent text-gray-800 font-comic font-bold px-3 py-1 rounded-full text-sm shadow-md transform rotate-12 animate-pulse-scale">
+                                    Leader
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-comic font-bold text-center text-gray-800 mb-2">Zhujie</h3>
+                        <p class="text-center text-gray-700 text-sm">Facilitates discussion and guides through each section.</p>
+                        <div class="text-center mt-3 text-gray-800 text-sm animate-pulse-slow">
+                            <i class="fa fa-hand-pointer-o"></i> Click to learn more
+                        </div>
+                    </div>
+                    
+                    <!-- 角色卡片：Yifei (Highlighter) - 女生猫咪头像 -->
+                    <div class="character-card bg-primary/10 rounded-2xl p-5 shadow-md border-2 border-primary cursor-pointer" data-character="yifei">
+                        <div class="flex justify-center mb-4">
+                            <div class="relative">
+                                <div class="w-32 h-32 rounded-full bg-primary/30 flex items-center justify-center overflow-hidden border-4 border-primary animate-float" style="animation-delay: 0.3s">
+                                    <img src="https://c-ssl.duitang.com/uploads/blog/202305/24/eASqyoLYuMqo46n.jpg" alt="Yifei - Highlighter (Female Cat Avatar)" class="w-full h-full object-cover">
+                                </div>
+                                <div class="absolute -top-2 -right-2 bg-accent text-gray-800 font-comic font-bold px-3 py-1 rounded-full text-sm shadow-md transform -rotate-6 animate-pulse-scale">
+                                    Highlighter
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-comic font-bold text-center text-gray-800 mb-2">Yifei</h3>
+                        <p class="text-center text-gray-700 text-sm">Highlights key points from discussions and articles.</p>
+                        <div class="text-center mt-3 text-gray-800 text-sm animate-pulse-slow">
+                            <i class="fa fa-hand-pointer-o"></i> Click to learn more
+                        </div>
+                    </div>
+                    
+                    <!-- 角色卡片：Minyan (Visualizer) - 男生猫咪头像 -->
+                    <div class="character-card bg-primary/10 rounded-2xl p-5 shadow-md border-2 border-primary cursor-pointer" data-character="minyan">
+                        <div class="flex justify-center mb-4">
+                            <div class="relative">
+                                <div class="w-32 h-32 rounded-full bg-primary/30 flex items-center justify-center overflow-hidden border-4 border-primary animate-float" style="animation-delay: 0.6s">
+                                    <img src="https://picx.zhimg.com/v2-b5661549595ee8d258fe50ba6ab4027f_r.jpg?source=1def8aca" alt="Minyan - Visualizer (Male Cat Avatar)" class="w-full h-full object-cover">
+                                </div>
+                                <div class="absolute -top-2 -right-2 bg-accent text-gray-800 font-comic font-bold px-3 py-1 rounded-full text-sm shadow-md transform rotate-6 animate-pulse-scale">
+                                    Visualizer
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-comic font-bold text-center text-gray-800 mb-2">Minyan</h3>
+                        <p class="text-center text-gray-700 text-sm">Creates visual aids like charts and graphs.</p>
+                        <div class="text-center mt-3 text-gray-800 text-sm animate-pulse-slow">
+                            <i class="fa fa-hand-pointer-o"></i> Click to learn more
+                        </div>
+                    </div>
+                    
+                    <!-- 角色卡片：Yizhou (Connector) - 男生猫咪头像 -->
+                    <div class="character-card bg-primary/10 rounded-2xl p-5 shadow-md border-2 border-primary cursor-pointer" data-character="yizhou">
+                        <div class="flex justify-center mb-4">
+                            <div class="relative">
+                                <div class="w-32 h-32 rounded-full bg-primary/30 flex items-center justify-center overflow-hidden border-4 border-primary animate-float" style="animation-delay: 0.9s">
+                                    <img src="http://img.keaiming.com/uploads/allimg/2020010413/xrmmzl0nlyr.jpeg" alt="Yizhou - Connector (Male Cat Avatar)" class="w-full h-full object-cover">
+                                </div>
+                                <div class="absolute -top-2 -right-2 bg-accent text-gray-800 font-comic font-bold px-3 py-1 rounded-full text-sm shadow-md transform -rotate-12 animate-pulse-scale">
+                                    Connector
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-comic font-bold text-center text-gray-800 mb-2">Yizhou</h3>
+                        <p class="text-center text-gray-700 text-sm">Connects discussion points to real-world examples.</p>
+                        <div class="text-center mt-3 text-gray-800 text-sm animate-pulse-slow">
+                            <i class="fa fa-hand-pointer-o"></i> Click to learn more
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-8">
+                    <button id="startDiscussionBtn" class="bg-primary hover:bg-secondary text-gray-800 font-comic font-bold py-3 px-8 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                        <i class="fa fa-play-circle mr-2"></i>Start Discussion
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 讨论部分 -->
+        <section id="discussionSection" class="hidden">
+            <!-- 返回角色介绍按钮和前往致谢页按钮 -->
+            <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                <button id="backToCharactersBtn" class="inline-flex items-center bg-white text-gray-800 font-comic py-2 px-5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:bg-primary/20">
+                    <i class="fa fa-arrow-left mr-2"></i> Back to Team
+                </button>
+                <button id="goToThanksBtn" class="inline-flex items-center bg-accent hover:bg-accent/80 text-gray-800 font-comic py-2 px-5 rounded-full shadow-md hover:shadow-lg transition-all duration-300">
+                    <i class="fa fa-heart mr-2"></i> Go to Acknowledgements
+                </button>
+            </div>
+            
+            <!-- 导航栏 -->
+            <div class="sticky top-4 z-30 mb-8 bg-white/90 backdrop-blur-sm rounded-full shadow-lg p-2 flex overflow-x-auto pb-2">
+                <button class="part-nav-btn active min-w-[120px] mx-1 bg-primary text-gray-800 font-comic py-2 px-4 rounded-full transition-all duration-300" data-part="1">
+                    Part 1
+                </button>
+                <button class="part-nav-btn min-w-[120px] mx-1 bg-gray-200 hover:bg-primary/50 text-gray-700 font-comic py-2 px-4 rounded-full transition-all duration-300" data-part="2">
+                    Part 2
+                </button>
+                <button class="part-nav-btn min-w-[120px] mx-1 bg-gray-200 hover:bg-primary/50 text-gray-700 font-comic py-2 px-4 rounded-full transition-all duration-300" data-part="3">
+                    Part 3
+                </button>
+                <button class="part-nav-btn min-w-[120px] mx-1 bg-gray-200 hover:bg-primary/50 text-gray-700 font-comic py-2 px-4 rounded-full transition-all duration-300" data-part="4">
+                    Part 4
+                </button>
+                <button class="part-nav-btn min-w-[120px] mx-1 bg-gray-200 hover:bg-primary/50 text-gray-700 font-comic py-2 px-4 rounded-full transition-all duration-300" data-part="5">
+                    Part 5
+                </button>
+                <button class="part-nav-btn min-w-[120px] mx-1 bg-gray-200 hover:bg-primary/50 text-gray-700 font-comic py-2 px-4 rounded-full transition-all duration-300" data-part="6">
+                    Part 6
+                </button>
+            </div>
+
+            <!-- 第1部分 -->
+            <div class="part-content active" data-part="1">
+                <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-8 transform transition-all duration-300 hover:shadow-xl animate-slide-up">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-gray-800 font-comic font-bold text-xl mr-4">1</div>
+                        <h2 class="text-[clamp(1.3rem,2.5vw,1.8rem)] font-comic font-bold text-gray-800">
+                            Background of AI in Higher Education
+                        </h2>
+                        <div class="ml-auto bg-accent/20 text-gray-800 font-comic px-4 py-1 rounded-full text-sm countdown-container">
+                            <i class="fa fa-clock-o mr-1"></i>
+                            <span class="countdown-timer">5:00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-8">
+                        <div class="flex items-start">
+                            <div class="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border-3 border-primary">
+                                <img src="https://c-ssl.duitang.com/uploads/blog/202106/01/20210601231241_94038.png" alt="Zhujie (Male Leader Cat Avatar)" class="w-full h-full object-cover">
+                            </div>
+                            <div class="ml-4 flex-grow">
+                                <div class="flex items-center mb-1">
+                                    <h3 class="font-comic font-bold text-gray-800 mr-2">Zhujie (Leader)</h3>
+                                    <span class="text-xs bg-primary/10 text-gray-800 px-2 py-0.5 rounded-full">speaking</span>
+                                </div>
+                                <div class="speech-bubble speech-right bg-primary/10 text-gray-800 p-4 border border-primary/30">
+                                    <p class="typing-text" data-text="Overview of generative AI, its rising popularity, and shifting institutional perspectives from banning to exploration."></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 第2部分到第6部分保持不变 -->
+            <div class="part-content hidden" data-part="2">
+                <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-8 transform transition-all duration-300 hover:shadow-xl animate-slide-up">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-gray-800 font-comic font-bold text-xl mr-4">2</div>
+                        <h2 class="text-[clamp(1.3rem,2.5vw,1.8rem)] font-comic font-bold text-gray-800">
+                            Current Status of AI in Higher Education
+                        </h2>
+                        <div class="ml-auto bg-accent/20 text-gray-800 font-comic px-4 py-1 rounded-full text-sm countdown-container">
+                            <i class="fa fa-clock-o mr-1"></i>
+                            <span class="countdown-timer">5:00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-8">
+                        <div class="flex items-start">
+                            <div class="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border-3 border-primary">
+                                <img src="https://c-ssl.duitang.com/uploads/blog/202106/01/20210601231241_94038.png" alt="Zhujie (Male Leader Cat Avatar)" class="w-full h-full object-cover">
+                            </div>
+                            <div class="ml-4 flex-grow">
+                                <div class="flex items-center mb-1">
+                                    <h3 class="font-comic font-bold text-gray-800 mr-2">Zhujie (Leader)</h3>
+                                    <span class="text-xs bg-primary/10 text-gray-800 px-2 py-0.5 rounded-full">speaking</span>
+                                </div>
+                                <div class="speech-bubble speech-right bg-primary/10 text-gray-800 p-4 border border-primary/30">
+                                    <p class="typing-text" data-text="Current real-world usage on campuses, student adoption rates, and varying educator perspectives."></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="part-content hidden" data-part="3">
+                <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-8 transform transition-all duration-300 hover:shadow-xl animate-slide-up">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-gray-800 font-comic font-bold text-xl mr-4">3</div>
+                        <h2 class="text-[clamp(1.3rem,2.5vw,1.8rem)] font-comic font-bold text-gray-800">
+                            Causes of AI’s Dual Impact
+                        </h2>
+                        <div class="ml-auto bg-accent/20 text-gray-800 font-comic px-4 py-1 rounded-full text-sm countdown-container">
+                            <i class="fa fa-clock-o mr-1"></i>
+                            <span class="countdown-timer">5:00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-8">
+                        <div class="flex items-start">
+                            <div class="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border-3 border-primary">
+                                <img src="https://c-ssl.duitang.com/uploads/blog/202106/01/20210601231241_94038.png" alt="Zhujie (Male Leader Cat Avatar)" class="w-full h-full object-cover">
+                            </div>
+                            <div class="ml-4 flex-grow">
+                                <div class="flex items-center mb-1">
+                                    <h3 class="font-comic font-bold text-gray-800 mr-2">Zhujie (Leader)</h3>
+                                    <span class="text-xs bg-primary/10 text-gray-800 px-2 py-0.5 rounded-full">speaking</span>
+                                </div>
+                                <div class="speech-bubble speech-right bg-primary/10 text-gray-800 p-4 border border-primary/30">
+                                    <p class="typing-text" data-text="Factors behind AI's mixed impacts: subject differences, tool limitations, and user behavior patterns."></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="part-content hidden" data-part="4">
+                <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-8 transform transition-all duration-300 hover:shadow-xl animate-slide-up">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-gray-800 font-comic font-bold text-xl mr-4">4</div>
+                        <h2 class="text-[clamp(1.3rem,2.5vw,1.8rem)] font-comic font-bold text-gray-800">
+                            Solutions for Balancing Pros/Cons
+                        </h2>
+                        <div class="ml-auto bg-accent/20 text-gray-800 font-comic px-4 py-1 rounded-full text-sm countdown-container">
+                            <i class="fa fa-clock-o mr-1"></i>
+                            <span class="countdown-timer">5:00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-8">
+                        <div class="flex items-start">
+                            <div class="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border-3 border-primary">
+                                <img src="https://c-ssl.duitang.com/uploads/blog/202106/01/20210601231241_94038.png" alt="Zhujie (Male Leader Cat Avatar)" class="w-full h-full object-cover">
+                            </div>
+                            <div class="ml-4 flex-grow">
+                                <div class="flex items-center mb-1">
+                                    <h3 class="font-comic font-bold text-gray-800 mr-2">Zhujie (Leader)</h3>
+                                    <span class="text-xs bg-primary/10 text-gray-800 px-2 py-0.5 rounded-full">speaking</span>
+                                </div>
+                                <div class="speech-bubble speech-right bg-primary/10 text-gray-800 p-4 border border-primary/30">
+                                    <p class="typing-text" data-text="Strategies for responsible AI implementation and guidelines to maximize benefits while minimizing risks."></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="part-content hidden" data-part="5">
+                <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-8 transform transition-all duration-300 hover:shadow-xl animate-slide-up">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-gray-800 font-comic font-bold text-xl mr-4">5</div>
+                        <h2 class="text-[clamp(1.3rem,2.5vw,1.8rem)] font-comic font-bold text-gray-800">
+                            Connecting Solutions to Daily Study
+                        </h2>
+                        <div class="ml-auto bg-accent/20 text-gray-800 font-comic px-4 py-1 rounded-full text-sm countdown-container">
+                            <i class="fa fa-clock-o mr-1"></i>
+                            <span class="countdown-timer">5:00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-8">
+                        <div class="flex items-start">
+                            <div class="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border-3 border-primary">
+                                <img src="https://c-ssl.duitang.com/uploads/blog/202106/01/20210601231241_94038.png" alt="Zhujie (Male Leader Cat Avatar)" class="w-full h-full object-cover">
+                            </div>
+                            <div class="ml-4 flex-grow">
+                                <div class="flex items-center mb-1">
+                                    <h3 class="font-comic font-bold text-gray-800 mr-2">Zhujie (Leader)</h3>
+                                    <span class="text-xs bg-primary/10 text-gray-800 px-2 py-0.5 rounded-full">speaking</span>
+                                </div>
+                                <div class="speech-bubble speech-right bg-primary/10 text-gray-800 p-4 border border-primary/30">
+                                    <p class="typing-text" data-text="Practical applications of AI solutions in everyday academic routines and study practices."></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="part-content hidden" data-part="6">
+                <div class="bg-white rounded-3xl shadow-lg p-6 md:p-8 mb-8 transform transition-all duration-300 hover:shadow-xl animate-slide-up">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-gray-800 font-comic font-bold text-xl mr-4">6</div>
+                        <h2 class="text-[clamp(1.3rem,2.5vw,1.8rem)] font-comic font-bold text-gray-800">
+                            Summary
+                        </h2>
+                        <div class="ml-auto bg-accent/20 text-gray-800 font-comic px-4 py-1 rounded-full text-sm countdown-container">
+                            <i class="fa fa-clock-o mr-1"></i>
+                            <span class="countdown-timer">5:00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-8">
+                        <div class="flex items-start">
+                            <div class="w-16 h-16 rounded-full overflow-hidden flex-shrink-0 border-3 border-primary">
+                                <img src="https://c-ssl.duitang.com/uploads/blog/202106/01/20210601231241_94038.png" alt="Zhujie (Male Leader Cat Avatar)" class="w-full h-full object-cover">
+                            </div>
+                            <div class="ml-4 flex-grow">
+                                <div class="flex items-center mb-1">
+                                    <h3 class="font-comic font-bold text-gray-800 mr-2">Zhujie (Leader)</h3>
+                                    <span class="text-xs bg-primary/10 text-gray-800 px-2 py-0.5 rounded-full">speaking</span>
+                                </div>
+                                <div class="speech-bubble speech-right bg-primary/10 text-gray-800 p-4 border border-primary/30">
+                                    <p class="typing-text" data-text="Synthesis of key points addressing whether AI's benefits outweigh its risks in higher education."></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 导航按钮 -->
+            <div class="flex justify-between mt-8">
+                <button id="prevBtn" class="bg-gray-200 hover:bg-primary text-gray-700 font-comic font-bold py-3 px-8 rounded-full shadow-md transform transition-all duration-300 hover:scale-105 opacity-50 cursor-not-allowed">
+                    <i class="fa fa-arrow-left mr-2"></i>Previous Part
+                </button>
+                <button id="nextBtn" class="bg-primary hover:bg-secondary text-gray-800 font-comic font-bold py-3 px-8 rounded-full shadow-md transform transition-all duration-300 hover:scale-105">
+                    Next Part<i class="fa fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- 独立的致谢页面 -->
+        <section id="thanksSection" class="hidden relative overflow-hidden">
+            <!-- 散花容器 - 放在最前面 -->
+            <div id="confetti-container" class="fixed top-0 left-0 w-full h-full pointer-events-none z-50"></div>
+            
+            <!-- 返回按钮区域 -->
+            <div class="flex flex-wrap justify-between items-center mb-6 gap-4 relative z-10">
+                <button id="backToDiscussionBtn" class="inline-flex items-center bg-white text-gray-800 font-comic py-2 px-5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:bg-primary/20">
+                    <i class="fa fa-arrow-left mr-2"></i> Back to Discussion
+                </button>
+                <button id="backToTeamBtn" class="inline-flex items-center bg-white text-gray-800 font-comic py-2 px-5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:bg-primary/20">
+                    <i class="fa fa-users mr-2"></i> Back to Team
+                </button>
+            </div>
+            
+            <!-- 致谢内容 -->
+            <div class="bg-white rounded-3xl shadow-xl p-6 md:p-10 transform transition-all duration-300 hover:shadow-2xl relative overflow-hidden z-10">
+                <!-- 装饰元素 -->
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-primary/30 rounded-full"></div>
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-primary/30 rounded-full"></div>
+                
+                <div class="text-center mb-10 relative z-10">
+                    <div class="w-24 h-24 rounded-full bg-primary flex items-center justify-center text-gray-800 font-comic font-bold text-4xl mx-auto mb-6 animate-pulse-scale">
+                        <i class="fa fa-heart text-accent"></i>
+                    </div>
+                    <h2 class="text-[clamp(1.8rem,4vw,2.5rem)] font-comic font-bold text-gray-800 animate-slide-down">
+                        Acknowledgements
+                    </h2>
+                </div>
+                
+                <div class="space-y-8 text-center max-w-2xl mx-auto relative z-10">
+                    <p class="text-gray-700 text-lg animate-fade-in" style="animation-delay: 0.2s">
+                        We would like to express our sincere gratitude to everyone who helped make this seminar possible.
+                    </p>
+                    
+                    <div class="bg-primary/10 rounded-2xl p-6 border border-primary/30 shadow-md transform transition-all duration-500 hover:scale-[1.02] animate-fade-in" style="animation-delay: 0.4s">
+                        <h3 class="font-comic font-bold text-gray-800 text-xl mb-6">Special Thanks To:</h3>
+                        <ul class="space-y-4 text-left">
+                            <li class="flex items-center animate-slide-up" style="animation-delay: 0.3s">
+                                <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-gray-800 mr-3 flex-shrink-0">
+                                    <i class="fa fa-star"></i>
+                                </div>
+                                <span>Our professor for guidance and valuable insights</span>
+                            </li>
+                            <li class="flex items-center animate-slide-up" style="animation-delay: 0.5s">
+                                <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-gray-800 mr-3 flex-shrink-0">
+                                    <i class="fa fa-star"></i>
+                                </div>
+                                <span>Classmates who participated in discussions</span>
+                            </li>
+                            <li class="flex items-center animate-slide-up" style="animation-delay: 0.7s">
+                                <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-gray-800 mr-3 flex-shrink-0">
+                                    <i class="fa fa-star"></i>
+                                </div>
+                                <span>Every member of our group for their dedicated contributions to this project</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // 角色数据
+        const characters = {
+            zhujie: {
+                name: "Zhujie",
+                role: "Leader",
+                avatar: "https://c-ssl.duitang.com/uploads/blog/202106/01/20210601231241_94038.png",
+                bio: "Zhujie is the group leader with excellent organizational skills and a clear vision for the project. He ensures everyone stays on track and contributes effectively.",
+                responsibilities: [
+                    "Organize and facilitate group meetings",
+                    "Ensure all sections of the seminar are cohesive",
+                    "Guide the discussion flow",
+                    "Make final decisions on content structure"
+                ]
+            },
+            yifei: {
+                name: "Yifei",
+                role: "Highlighter",
+                avatar: "https://c-ssl.duitang.com/uploads/blog/202305/24/eASqyoLYuMqo46n.jpg",
+                bio: "Yifei has a talent for identifying key information and presenting it in an engaging way. She excels at pinpointing the most important aspects of complex topics.",
+                responsibilities: [
+                    "Identify key points from research materials",
+                    "Highlight critical arguments and evidence",
+                    "Ensure important information isn't overlooked",
+                    "Create summaries of main discussion points"
+                ]
+            },
+            minyan: {
+                name: "Minyan",
+                role: "Visualizer",
+                avatar: "https://picx.zhimg.com/v2-b5661549595ee8d258fe50ba6ab4027f_r.jpg?source=1def8aca",
+                bio: "Minyan has a strong visual thinking ability and can transform complex ideas into clear, understandable visual representations.",
+                responsibilities: [
+                    "Create charts and graphs for data visualization",
+                    "Design visual aids to support arguments",
+                    "Ensure visual consistency throughout the presentation",
+                    "Simplify complex concepts through visuals"
+                ]
+            },
+            yizhou: {
+                name: "Yizhou",
+                role: "Connector",
+                avatar: "http://img.keaiming.com/uploads/allimg/2020010413/xrmmzl0nlyr.jpeg",
+                bio: "Yizhou has a knack for making connections between abstract concepts and real-world applications, helping to illustrate practical implications.",
+                responsibilities: [
+                    "Link theoretical concepts to real-world examples",
+                    "Connect different sections of the seminar",
+                    "Provide practical applications of discussed ideas",
+                    "Help audience relate to the material"
+                ]
+            }
+        };
+
+        // 角色模态框功能
+        const characterModal = document.getElementById('characterModal');
+        const characterModalBackdrop = document.getElementById('characterModalBackdrop');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const modalAvatar = document.getElementById('modalAvatar');
+        const modalName = document.getElementById('modalName');
+        const modalRole = document.getElementById('modalRole');
+        const modalBio = document.getElementById('modalBio');
+        const modalResponsibilities = document.getElementById('modalResponsibilities');
+        let clickX = 0;
+        let clickY = 0;
+
+        // 打开角色详情模态框 - 添加从点击位置放大的效果
+        document.querySelectorAll('.character-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                // 记录点击位置
+                clickX = e.clientX;
+                clickY = e.clientY;
+                
+                const characterId = this.getAttribute('data-character');
+                const character = characters[characterId];
+                
+                if (character) {
+                    modalAvatar.src = character.avatar;
+                    modalAvatar.alt = `${character.name} - ${character.role}`;
+                    modalName.textContent = character.name;
+                    modalRole.textContent = character.role;
+                    modalBio.textContent = character.bio;
+                    
+                    // 清空并添加职责列表
+                    modalResponsibilities.innerHTML = '';
+                    character.responsibilities.forEach(responsibility => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<i class="fa fa-check text-accent mr-2"></i>${responsibility}`;
+                        modalResponsibilities.appendChild(li);
+                    });
+                    
+                    // 设置初始位置为点击位置
+                    characterModal.style.top = `${clickY}px`;
+                    characterModal.style.left = `${clickX}px`;
+                    characterModal.style.transform = 'translate(0, 0) scale(0.3)';
+                    
+                    // 显示模态框
+                    setTimeout(() => {
+                        characterModalBackdrop.classList.add('active');
+                        characterModal.classList.add('active');
+                        // 动画到中心位置
+                        characterModal.style.top = '50%';
+                        characterModal.style.left = '50%';
+                        characterModal.style.transform = 'translate(-50%, -50%) scale(1)';
+                    }, 50);
+                    
+                    document.body.style.overflow = 'hidden'; // 防止背景滚动
+                }
+            });
+        });
+
+        // 关闭角色详情模态框 - 添加缩小到点击位置的效果
+        function closeModal() {
+            // 移除active类，添加closing类触发缩小动画
+            characterModal.classList.remove('active');
+            characterModal.classList.add('closing');
+            
+            // 动画到点击位置并缩小
+            characterModal.style.top = `${clickY}px`;
+            characterModal.style.left = `${clickX}px`;
+            characterModal.style.transform = `translate(0, 0) scale(0.3)`;
+            
+            // 动画结束后隐藏元素
+            setTimeout(() => {
+                characterModal.classList.remove('closing');
+                characterModalBackdrop.classList.remove('active');
+                document.body.style.overflow = ''; // 恢复背景滚动
+            }, 300);
+        }
+
+        // 关闭按钮事件
+        closeModalBtn.addEventListener('click', closeModal);
+        // 背景点击关闭
+        characterModalBackdrop.addEventListener('click', closeModal);
+        // 添加Got it按钮关闭功能
+        document.querySelectorAll('.close-modal-btn').forEach(btn => {
+            btn.addEventListener('click', closeModal);
+        });
+        // 模态框内部点击也可关闭
+        characterModal.addEventListener('click', function(e) {
+            // 避免点击内部元素时关闭
+            if (e.target === characterModal) {
+                closeModal();
+            }
+        });
+
+        // 按ESC键关闭模态框
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && characterModal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+        
+        // 散花效果实现 - 放在最前面
+        function createConfetti() {
+            const container = document.getElementById('confetti-container');
+            if (!container) return;
+            
+            // 清除现有散花
+            container.innerHTML = '';
+            
+            // 创建更多散花元素（200个）以覆盖全屏
+            for (let i = 0; i < 200; i++) {
+                const confetti = document.createElement('div');
+                confetti.classList.add('confetti');
+                
+                // 随机颜色
+                const colors = ['#FFD166', '#D9FFFF', '#BFFFFF', '#EF476F', '#118AB2', '#06D6A0', '#9B5DE5', '#F15BB5'];
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // 随机形状
+                const shapes = ['square', 'circle', 'triangle'];
+                const shape = shapes[Math.floor(Math.random() * shapes.length)];
+                
+                if (shape === 'circle') {
+                    confetti.style.borderRadius = '50%';
+                } else if (shape === 'triangle') {
+                    confetti.style.clipPath = 'polygon(50% 0%, 0% 100%, 100% 100%)';
+                }
+                
+                // 随机位置和大小
+                confetti.style.left = `${Math.random() * 100}%`;
+                confetti.style.width = `${Math.random() * 12 + 4}px`;
+                confetti.style.height = `${Math.random() * 12 + 4}px`;
+                
+                // 随机动画延迟和持续时间，使效果更持久
+                confetti.style.animationDelay = `${Math.random() * 8}s`;
+                confetti.style.animationDuration = `${Math.random() * 6 + 4}s`;
+                
+                // 添加到容器
+                container.appendChild(confetti);
+                
+                // 触发动画
+                setTimeout(() => {
+                    confetti.classList.add('animate-fall');
+                }, 100);
+                
+                // 动画结束后重新添加，使散花效果持续
+                setTimeout(() => {
+                    confetti.remove();
+                    
+                    // 定期补充新的散花
+                    if (document.getElementById('thanksSection') && !document.getElementById('thanksSection').classList.contains('hidden')) {
+                        setTimeout(createConfetti, 500);
+                    }
+                }, 10000);
+            }
+        }
+        
+        // 倒计时功能实现
+        let countdownIntervals = {};
+        
+        function startCountdown(part) {
+            // 清除同一部分的现有倒计时
+            if (countdownIntervals[part]) {
+                clearInterval(countdownIntervals[part]);
+            }
+            
+            // 设置5分钟倒计时（300秒）
+            let seconds = 300;
+            const timerElement = document.querySelector(`.part-content[data-part="${part}"] .countdown-timer`);
+            
+            if (!timerElement) return;
+            
+            // 更新显示
+            function updateTimer() {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                timerElement.textContent = `${minutes}:${remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds}`;
+                
+                // 时间到
+                if (seconds <= 0) {
+                    clearInterval(countdownIntervals[part]);
+                    timerElement.classList.add('text-red-500');
+                    timerElement.classList.add('font-bold');
+                } else {
+                    seconds--;
+                }
+            }
+            
+            // 立即更新一次
+            updateTimer();
+            
+            // 设置定时器
+            countdownIntervals[part] = setInterval(updateTimer, 1000);
+        }
+        
+        function stopAllCountdowns() {
+            // 停止所有倒计时
+            Object.values(countdownIntervals).forEach(interval => {
+                clearInterval(interval);
+            });
+            countdownIntervals = {};
+        }
+        
+        // 打字机效果实现
+        function typeText(element, text, speed = 10) {
+            // 清空元素
+            element.textContent = '';
+            
+            let i = 0;
+            // 计算每个字符的延迟时间，确保总时间约为2秒
+            const adjustedSpeed = Math.floor(2000 / text.length);
+            
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, adjustedSpeed);
+                }
+            }
+            
+            type();
+        }
+        
+        // 初始化当前部分的打字效果
+        function initCurrentPartTyping() {
+            const activePart = document.querySelector('.part-content.active');
+            if (!activePart) return;
+            
+            const typingElement = activePart.querySelector('.typing-text');
+            if (typingElement) {
+                const text = typingElement.getAttribute('data-text');
+                typeText(typingElement, text);
+            }
+        }
+        
+        // 部分导航功能
+        document.querySelectorAll('.part-nav-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const part = this.getAttribute('data-part');
+                
+                // 隐藏所有部分
+                document.querySelectorAll('.part-content').forEach(content => {
+                    content.classList.add('hidden');
+                    content.classList.remove('active');
+                });
+                
+                // 显示选中部分
+                document.querySelector(`.part-content[data-part="${part}"]`).classList.remove('hidden');
+                document.querySelector(`.part-content[data-part="${part}"]`).classList.add('active');
+                
+                // 更新导航按钮状态
+                document.querySelectorAll('.part-nav-btn').forEach(b => {
+                    b.classList.remove('active', 'bg-primary');
+                    b.classList.add('bg-gray-200', 'hover:bg-primary/50');
+                });
+                this.classList.add('active', 'bg-primary');
+                this.classList.remove('bg-gray-200', 'hover:bg-primary/50');
+                
+                // 更新上一步/下一步按钮状态
+                updateNavButtons(part);
+                
+                // 停止所有倒计时并开始当前部分的倒计时
+                stopAllCountdowns();
+                startCountdown(part);
+                
+                // 初始化打字效果
+                initCurrentPartTyping();
+            });
+        });
+        
+        // 更新导航按钮状态
+        function updateNavButtons(currentPart) {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const partNum = parseInt(currentPart);
+            
+            // 更新上一步按钮
+            if (partNum > 1) {
+                prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                prevBtn.classList.add('hover:bg-primary');
+            } else {
+                prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                prevBtn.classList.remove('hover:bg-primary');
+            }
+            
+            // 更新下一步按钮
+            if (partNum < 6) {
+                nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                nextBtn.classList.add('hover:bg-secondary');
+            } else {
+                nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                nextBtn.classList.remove('hover:bg-secondary');
+            }
+        }
+        
+        // 上一步按钮
+        document.getElementById('prevBtn').addEventListener('click', function() {
+            const currentPart = document.querySelector('.part-content.active').getAttribute('data-part');
+            const prevPart = parseInt(currentPart) - 1;
+            
+            if (prevPart >= 1) {
+                document.querySelector(`.part-nav-btn[data-part="${prevPart}"]`).click();
+            }
+        });
+        
+        // 下一步按钮
+        document.getElementById('nextBtn').addEventListener('click', function() {
+            const currentPart = document.querySelector('.part-content.active').getAttribute('data-part');
+            const nextPart = parseInt(currentPart) + 1;
+            
+            if (nextPart <= 6) {
+                document.querySelector(`.part-nav-btn[data-part="${nextPart}"]`).click();
+            }
+        });
+        
+        // 开始讨论按钮
+        document.getElementById('startDiscussionBtn').addEventListener('click', function() {
+            document.getElementById('charactersSection').classList.add('hidden');
+            document.getElementById('discussionSection').classList.remove('hidden');
+            
+            // 开始第一部分的倒计时
+            startCountdown(1);
+            
+            // 初始化第一部分的打字效果
+            initCurrentPartTyping();
+        });
+        
+        // 返回角色介绍按钮
+        document.getElementById('backToCharactersBtn').addEventListener('click', function() {
+            document.getElementById('discussionSection').classList.add('hidden');
+            document.getElementById('charactersSection').classList.remove('hidden');
+            
+            // 停止所有倒计时
+            stopAllCountdowns();
+        });
+        
+        // 前往致谢页按钮
+        document.getElementById('goToThanksBtn').addEventListener('click', function() {
+            document.getElementById('discussionSection').classList.add('hidden');
+            document.getElementById('thanksSection').classList.remove('hidden');
+            
+            // 停止所有倒计时
+            stopAllCountdowns();
+            
+            // 触发散花效果
+            createConfetti();
+        });
+        
+        // 返回讨论按钮
+        document.getElementById('backToDiscussionBtn').addEventListener('click', function() {
+            document.getElementById('thanksSection').classList.add('hidden');
+            document.getElementById('discussionSection').classList.remove('hidden');
+            
+            // 开始当前活跃部分的倒计时
+            const activePart = document.querySelector('.part-content.active').getAttribute('data-part');
+            startCountdown(activePart);
+        });
+        
+        // 返回团队按钮
+        document.getElementById('backToTeamBtn').addEventListener('click', function() {
+            document.getElementById('thanksSection').classList.add('hidden');
+            document.getElementById('charactersSection').classList.remove('hidden');
+            
+            // 停止所有倒计时
+            stopAllCountdowns();
+        });
+        
+        // 返回顶部按钮
+        const backToTopBtn = document.getElementById('backToTopBtn');
+        
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.remove('opacity-0');
+                backToTopBtn.classList.add('opacity-100');
+            } else {
+                backToTopBtn.classList.remove('opacity-100');
+                backToTopBtn.classList.add('opacity-0');
+            }
+        });
+        
+        backToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', function() {
+            // 确保导航按钮状态正确
+            updateNavButtons(1);
+            
+            // 当致谢页面被直接访问时也显示散花
+            if (!document.getElementById('thanksSection').classList.contains('hidden')) {
+                createConfetti();
+            }
+        });
+    </script>
+</body>
+</html>
